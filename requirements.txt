@@ -1,0 +1,10 @@
+asgiref==3.7.2
+certifi==2023.11.17
+crispy-bootstrap4==2023.1
+Django==5.0.1
+django-crispy-forms==2.1
+django-environ==0.11.2
+pillow==10.2.0
+python-decouple==3.8
+python-dotenv==1.0.1
+sqlparse==0.4.4
