@@ -1,8 +1,10 @@
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from .models import Post
+from .models import Post, Comment
+from .forms import CommentForm
 from django.contrib.auth.models import User
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.urls import reverse
 
 
 def home(request):
@@ -31,8 +33,21 @@ class UserPostListView(ListView):
         return Post.objects.filter(author=user).order_by('date_posted')
 
 
-class PostDetailView(DetailView):
+class PostDetailView(LoginRequiredMixin, DetailView):
     model = Post
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        pk = self.kwargs["pk"]
+
+        form = CommentForm()
+        post = get_object_or_404(Post, pk=pk)
+        comments = post.comment_set.all()
+
+        context['post'] = post
+        context['comments'] = comments
+        context['form'] = form
+        return context
 
 
 class PostCreateView(LoginRequiredMixin, CreateView):
@@ -42,6 +57,20 @@ class PostCreateView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         form.instance.author = self.request.user
         return super().form_valid(form)
+
+
+class AddCommentView(LoginRequiredMixin, CreateView):
+    model = Comment
+    fields = ['content']
+
+    def form_valid(self, form):
+        form.instance.post_id = self.kwargs['pk']
+        form.instance.author = self.request.user
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        pk = self.kwargs["pk"]
+        return reverse("post-detail", kwargs={"pk": pk})
 
 
 class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
@@ -59,6 +88,21 @@ class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return False
 
 
+class CommentUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+        model = Comment
+        fields = ['content']
+
+        def form_valid(self, form):
+            form.instance.author = self.request.user
+            return super().form_valid(form)
+
+        def test_func(self):
+            post = self.get_object()
+            if self.request.user == post.author:
+                return True
+            return False
+
+
 class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Post
     success_url = '/'
@@ -70,5 +114,12 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         return False
 
 
-def about(request):
-    return render(request, 'blog/about.html', {'title': 'About'})
+class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = Comment
+    success_url = '/'
+
+    def test_func(self):
+        comment = self.get_object()
+        if self.request.user == comment.author:
+            return True
+        return False

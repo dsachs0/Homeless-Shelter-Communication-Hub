@@ -18,6 +18,7 @@ class Post(models.Model):
 
 
 class Comment(models.Model):
+    post = models.ForeignKey(Post, default="", on_delete=models.CASCADE)
     content = models.TextField()
     date_posted = models.DateTimeField(default=timezone.now)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -27,3 +28,6 @@ class Comment(models.Model):
 
     def __str__(self):
         return 'Comment by {}'.format(self.author)
+
+    def get_absolute_url(self):
+        return reverse('post-detail', kwargs={'pk': self.post.id})

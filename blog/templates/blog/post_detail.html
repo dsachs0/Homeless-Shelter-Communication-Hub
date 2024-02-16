@@ -1,15 +1,16 @@
 {% extends "blog/base.html" %}
+{% load crispy_forms_tags %}
 {% block content %}
     <article class="media content-section">
-        <img class="rounded-circle article-img" src="{{ object.author.profile.image.url }}">
+        <img class="rounded-circle article-img" alt="profile pic" src="{{ object.author.profile.image.url }}">
       <div class="media-body">
         <div class="article-metadata">
           <a class="mr-2" href="{% url 'user-posts' post.author.username %}">{{ object.author }}</a>
           <small class="text-muted">{{ object.date_posted|date:"F d, Y" }}</small>
             {% if object.author == user %}
             <div>
-                <a class="btn btn-secondary btn-sm mt-1" href="{% url 'post-update' object.id %}">Update</a>
-                <a class="btn btn-danger btn-sm mt-1" href="{% url 'post-delete' object.id %}">Delete</a>
+                <a class="btn btn-link btn-sm mt-1 text-muted" href="{% url 'post-update' object.id %}">Update</a>
+                <a class="btn btn-link btn-sm mt-1 text-muted" href="{% url 'post-delete' object.id %}">Delete</a>
             </div>
             {% endif %}
         </div>
@@ -17,4 +18,52 @@
         <p class="article-content">{{ object.content }}</p>
       </div>
     </article>
+
+    <!-- Comments -->
+    {% if comments %}
+      <div class="row mt-5">
+        <div class="col-lg-6 offset-lg-1">
+          Comment{{ comments.count|pluralize }}
+          <span class="badge badge-dark ml-2">{{ comments.count }}</span>
+        </div>
+          {% for comment in comments %}
+            <div class="col-lg-8 offset-lg-1 mt-2 pb-2">
+              <div class="card p-2">
+                <div class="row">
+                  <div class="col-2">
+                    <img class="rounded-circle article-img" alt="profile pic" src="{{ comment.author.profile.image.url }}">
+                  </div>
+                    <div class="col-10">
+                      <div class="media-body">
+                        <div class="article-metadata">
+                          <a class="mr-2" href="{% url 'user-posts' comment.author.username %}">{{ comment.author }}</a>
+                          <small class="text-muted">{{ comment.date_posted|date:"F d, Y" }}</small>
+                            {% if comment.author == user %}
+                                <div>
+                                <a class="btn btn-link btn-sm mt-1 text-muted" href="{% url 'comment-update' comment.id %}">Update</a>
+                                <a class="btn btn-link btn-sm mt-1 text-muted" href="{% url 'comment-delete' comment.id %}">Delete</a>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-13">
+                            <p class="m-1 mt-3">{{ comment.content }}</p>
+                        </div>
+                      </div>
+                    </div>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+      </div>
+    {% endif %}
+
+  <!-- Form to leave comment -->
+    <div class="pb-5">
+        <div class="row mt-5 col-lg-6 offset-lg-1 p-1">
+            <a class="btn btn-secondary btn-md mt-1" href="{% url 'comment-create' object.id %}"> Add comment</a>
+        </div>
+    </div>
+
+
+
 {% endblock %}
