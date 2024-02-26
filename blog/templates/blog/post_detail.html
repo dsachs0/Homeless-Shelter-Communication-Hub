@@ -7,12 +7,18 @@
         <div class="article-metadata">
           <a class="mr-2" href="{% url 'user-posts' post.author.username %}">{{ object.author }}</a>
           <small class="text-muted">{{ object.date_posted|date:"F d, Y" }}</small>
-            {% if object.author == user %}
-            <div>
-                <a class="btn btn-link btn-sm mt-1 text-muted" href="{% url 'post-update' object.id %}">Update</a>
-                <a class="btn btn-link btn-sm mt-1 text-muted" href="{% url 'post-delete' object.id %}">Delete</a>
-            </div>
-            {% endif %}
+             <div class="d-flex align-items-center">
+                <form method="post">
+                        {% csrf_token %}
+                        <button class="btn btn-link btn-sm mt-1 text-muted" type="submit">{% if post.pinned %}Unpin{% else %}Pin{% endif %}</button>
+                </form>
+                {% if object.author == user %}
+                <div>
+                    <a class="btn btn-link btn-sm mt-1 text-muted" href="{% url 'post-update' object.id %}">Update</a>
+                    <a class="btn btn-link btn-sm mt-1 text-muted" href="{% url 'post-delete' object.id %}">Delete</a>
+                </div>
+                {% endif %}
+             </div>
         </div>
         <h2 class="article-title">{{ object.title }}</h2>
         <p class="article-content">{{ object.content }}</p>
@@ -63,7 +69,4 @@
             <a class="btn btn-secondary btn-md mt-1" href="{% url 'comment-create' object.id %}"> Add comment</a>
         </div>
     </div>
-
-
-
 {% endblock %}
