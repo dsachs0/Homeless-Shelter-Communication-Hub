@@ -1,5 +1,5 @@
-# Django-Blog
-This projected started as a django blog application in order for me to learn django. After showing my manager at work he asked if I could make something similar for our workplace, so I decided to use this project for that. Our workplace is at a homeless shelter and this application will be used as a platform for the team to provide quick, real time updates and shift reports to help improve communication between the different shifts. 
+# Communication-Hub
+This projected started as a django blog application in order for me to learn django. After showing my manager at work he asked if I could make something similar for our workplace, so I decided to use this project for that. Our workplace is at a homeless shelter and this application will be used as a platform for the team to provide quick, real time updates and shift reports to help improve communication between the different shifts. There is a link to a demo of the web-application in the about section. On the website, there is a pinned post that contains log in creditionals if anyone is interested in exploring the site in full.
 
 Features:
   - User Authentification System w/ Password Reset
